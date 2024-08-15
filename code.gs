@@ -86,7 +86,7 @@ function getAssignorTeams(ss, email) {
   var headers = sheet.getRange('A3:I3').getValues().flat();
   var teams = [];
   for (var i = 0; i < headers.length; i++) {
-    var column = sheet.getRange(4, i + 3, sheet.getLastRow() - 3, 1).getValues().flat();
+    var column = sheet.getRange(4, i + 1, sheet.getLastRow() - 3, 1).getValues().flat();
     if (column.includes(email)) {
       teams.push(headers[i]);
     }
