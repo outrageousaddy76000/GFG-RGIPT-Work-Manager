@@ -83,6 +83,6 @@ We welcome contributions to improve the GeeksforGeeks RGIPT Work Manager! Please
 ## Troubleshooting
 
 1. If trigger does not correctly set editors and viewers. Go to a blank cell and hit delete/backspace. This will trigger the process again.
-    # Reason: When editing the general sheet, a lot of onedit calls go to the server simultaneously.
+    ### Reason: When editing the general sheet, a lot of onedit calls go to the server simultaneously.
 
 For any issues or further assistance, feel free to reach out.
