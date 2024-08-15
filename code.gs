@@ -143,12 +143,6 @@ function onEdit(e) {
       }
     }
   }
-  else if (sheet.getName() === 'General') {
-    if (row >= 4 && column >= 1 && column <= 8) {
-      setViewAccessForTeams();
-      updateEditableColumns();
-    }
-  }
 }
 function setViewAccessForTeams() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
