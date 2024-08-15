@@ -15,7 +15,7 @@ function onFormSubmit(event) {
     var filled = itemResponse.getResponse();
     record.push(filled);
   }
-  updateBoard(ss,assignorPres,record);
+  updateBoard(ss,assignorPres,assignorTeams,record);
 }
 
 function getAssignorPres(ss, assignorTeams) {
@@ -66,11 +66,12 @@ function formatDate(dateString, format) {
   var date = new Date(dateString);
   return Utilities.formatDate(date, 'GMT+05:30', format);
 }
-function updateBoard(ss,assignorPres,record){
+function updateBoard(ss,assignorPres,assignorTeams,record){
   var boardSheet = ss.getSheetByName('Board');
   var generalSheet = ss.getSheetByName('General');
   //step 1 - send mail
   var assignedTeam = record[0][0];
+  var assignorTeam = assignorTeams[0];
   var headers = generalSheet.getRange('A3:H3').getValues().flat();
   var teamIndex = headers.indexOf(assignedTeam)+1;
   assignedTeamEmails = [];
@@ -109,7 +110,7 @@ function updateBoard(ss,assignorPres,record){
   var rule1 = SpreadsheetApp.newDataValidation().requireValueInList(pList).setAllowInvalid(false).setHelpText("Choose from the list.").build();
   var rule2 = SpreadsheetApp.newDataValidation().requireValueInList(sList).setAllowInvalid(false).setHelpText("Choose from the list.").build();
   var row = [
-    assignedTeam,
+    assignorTeam,
     description,
     approvedByAssignorHead,
     assignedTeam,
