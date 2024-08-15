@@ -22,9 +22,10 @@ The GeeksforGeeks RGIPT Work Manager consists of two main components:
 - **Team Info**: Lists email addresses of team members. 
 
 **Important Notes:**
-- **Editing Team Info**: Modifications to team members in the Team Info section reset all permissions. New permissions are automatically granted:
+- **Editing Team Info**: Modifications to team members in the Team Info section reset all permissions is not recommended.
+  - If changes are made, go to the apps script code, and execute the setAccessForTeams() function manually until it successfully executes. It is very prone to failure so it is best to       execute it manually and make sure the permissions are granted as expected.
   - All members receive view access to all sheets.
-  - Presidents/Vice Presidents receive editor access only to specific columns (C, F, G) in the board sheet:
+  - Presidents/Vice Presidents and Advisory Board members receive editor access only to specific columns (C, F, G) in the board sheet:
     - Column C: Approved by Assignor Heads
     - Column F: Priority
     - Column G: Status
