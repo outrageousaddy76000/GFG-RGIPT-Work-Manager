@@ -21,7 +21,7 @@ function onFormSubmit(event) {
 function getAssignorPres(ss, assignorTeams) {
   var sheet = ss.getSheetByName('General');
   var presEmails = sheet.getRange('A4:A').getValues().flat();
-  var headers = sheet.getRange('B3:H3').getValues().flat();
+  var headers = sheet.getRange('B3:I3').getValues().flat();
   var teamColumns = {};
   for (var i = 0; i < headers.length; i++) {
     if (assignorTeams.includes(headers[i])) {
@@ -46,13 +46,13 @@ function getAssignorPres(ss, assignorTeams) {
 
 function checkValidEmail(ss, email) {
   var sheet = ss.getSheetByName('General');
-  var allEmails = sheet.getRange('B4:H').getValues().flat();
+  var allEmails = sheet.getRange('A4:I').getValues().flat();
   return allEmails.includes(email);
 }
 
 function getAssignorTeams(ss, email) {
   var sheet = ss.getSheetByName('General');
-  var headers = sheet.getRange('B3:H3').getValues().flat();
+  var headers = sheet.getRange('B3:I3').getValues().flat();
   var teams = [];
   for (var i = 0; i < headers.length; i++) {
     var column = sheet.getRange(4, i + 3, sheet.getLastRow() - 3, 1).getValues().flat();
@@ -85,14 +85,17 @@ function updateBoard(ss,assignorPres,record){
   assignedTeamEmails.forEach(function(email) {
     MailApp.sendEmail(email, teamSubject, teamBody);
   });
+  var isAdvisoryBoard = assignorPres.length === 0;
   var presSubject = 'Approval Required for Work Assignment Request';
   var presBody = 'A work assignment request requires your approval. Please check the board for details and approve the request as soon as possible. Board Link: '+ ss.getUrl() + '\n\nRegards,\nGeeksforGeeks RGIPT Student Chapter';
-  assignorPres.forEach(function(email) {
-    MailApp.sendEmail(email, presSubject, presBody);
-  });
+  if (!isAdvisoryBoard) {
+    assignorPres.forEach(function(email) {
+      MailApp.sendEmail(email, presSubject, presBody);
+    });
+  }
   //step 2 - update board sheet
   var description = record[1];
-  var approvedByAssignorHead = '';
+  var approvedByAssignorHead = isAdvisoryBoard ? 'TRUE' : '';
   var deadline = formatDate(record[2], 'dd/MM/yyyy');;
   var priority = record[3];
   var status = 'Waiting';
@@ -117,6 +120,7 @@ function updateBoard(ss,assignorPres,record){
   ];
   boardSheet.appendRow(row);
   range1.insertCheckboxes();
+  range1.setValue(approvedByAssignorHead);
   range2.setDataValidation(rule1);
   range3.setDataValidation(rule2);
   var deadlineDate = new Date(record[2]);
@@ -144,10 +148,11 @@ function onEdit(e) {
     }
   }
 }
+
 function setViewAccessForTeams() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName('General');
-  var emailRange = sheet.getRange('A4:H');
+  var emailRange = sheet.getRange('B4:H');
   var emailValues = emailRange.getValues();
   var emails = emailValues.flat().filter(function(email) {
     return email.trim() !== '';
@@ -166,12 +171,16 @@ function setViewAccessForTeams() {
 }
 function updateEditableColumns() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName('Board');
   var generalSheet = ss.getSheetByName('General');
-  var presEmails = generalSheet.getRange('A4:A').getValues().flat().filter(function(email) {
-    return email.trim() !== '';
-  });
+  var lastRow = generalSheet.getLastRow();
+  var presEmails = generalSheet.getRange('A4:A' + lastRow).getValues().flat();
+  presEmails = presEmails.filter(email => email.trim() !== '');
+  var advisoryBoardEmails = generalSheet.getRange('I4:I' + lastRow).getValues().flat();
+  advisoryBoardEmails = advisoryBoardEmails.filter(email => email.trim() !== '');
   presEmails.forEach(function(email) {
+    ss.addEditor(email);
+  });
+  advisoryBoardEmails.forEach(function(email){
     ss.addEditor(email);
   });
 }
@@ -210,7 +219,6 @@ function handleApprovalChange(sheet, row, approved) {
       assignedTeamEmails = generalSheet.getRange(columnLetter + '4:' + columnLetter + generalSheet.getLastRow()).getValues().flat();
       assignedTeamEmails = assignedTeamEmails.filter(email => email.trim() !== '');
     }
-    console.log(assignedTeamEmails);
     var teamSubject = 'Approval Granted for Work Assignment Request';
     var teamBody = 'Your work assignment request has been approved. Please proceed with the task. Check the board for details. Board Link: ' + ss.getUrl() + '\n\nRegards,\nGeeksforGeeks RGIPT Student Chapter';
     assignedTeamEmails.forEach(function(email) {
