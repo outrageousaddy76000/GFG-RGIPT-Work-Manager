@@ -80,9 +80,4 @@ We welcome contributions to improve the GeeksforGeeks RGIPT Work Manager! Please
 6. **Review Process**: Your pull request will be reviewed by project maintainers. Be open to feedback and make any necessary revisions.
 7. **Stay Updated**: Keep an eye on the project’s issues and discussions to stay informed about ongoing work and upcoming changes.
 
-## Troubleshooting
-
-1. If trigger does not correctly set editors and viewers. Go to a blank cell and hit delete/backspace. This will trigger the process again.
-    ### Reason: When editing the general sheet, a lot of onedit calls go to the server simultaneously.
-
 For any issues or further assistance, feel free to reach out.
