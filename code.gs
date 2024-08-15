@@ -1,3 +1,34 @@
+function setAccessForTeams() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('General');
+  var emailRange = sheet.getRange('B4:H');
+  var emailValues = emailRange.getValues();
+  var emails = emailValues.flat().filter(function(email) {
+    return email.trim() !== '';
+  });
+  var lastRow = sheet.getLastRow();
+  var presEmails = sheet.getRange('A4:A' + lastRow).getValues().flat();
+  presEmails = presEmails.filter(email => email.trim() !== '');
+  var advisoryBoardEmails = sheet.getRange('I4:I' + lastRow).getValues().flat();
+  advisoryBoardEmails = advisoryBoardEmails.filter(email => email.trim() !== '');
+  var currentEditors = ss.getEditors();
+  var currentViewers = ss.getViewers();
+  currentEditors.forEach(function(editor) {
+    ss.removeEditor(editor);
+  });
+  currentViewers.forEach(function(viewer) {
+    ss.removeViewer(viewer);
+  });
+  emails.forEach(function(email) {
+    ss.addViewer(email);
+  });
+  presEmails.forEach(function(email) {
+    ss.addEditor(email);
+  });
+  advisoryBoardEmails.forEach(function(email){
+    ss.addEditor(email);
+  });
+}
 function onFormSubmit(event) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var form = FormApp.openById('form_id');
@@ -52,7 +83,7 @@ function checkValidEmail(ss, email) {
 
 function getAssignorTeams(ss, email) {
   var sheet = ss.getSheetByName('General');
-  var headers = sheet.getRange('B3:I3').getValues().flat();
+  var headers = sheet.getRange('A3:I3').getValues().flat();
   var teams = [];
   for (var i = 0; i < headers.length; i++) {
     var column = sheet.getRange(4, i + 3, sheet.getLastRow() - 3, 1).getValues().flat();
@@ -150,41 +181,6 @@ function onEdit(e) {
   }
 }
 
-function setViewAccessForTeams() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName('General');
-  var emailRange = sheet.getRange('B4:H');
-  var emailValues = emailRange.getValues();
-  var emails = emailValues.flat().filter(function(email) {
-    return email.trim() !== '';
-  });
-  var currentEditors = ss.getEditors();
-  var currentViewers = ss.getViewers();
-  currentEditors.forEach(function(editor) {
-    ss.removeEditor(editor);
-  });
-  currentViewers.forEach(function(viewer) {
-    ss.removeViewer(viewer);
-  });
-  emails.forEach(function(email) {
-    ss.addViewer(email);
-  });
-}
-function updateEditableColumns() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var generalSheet = ss.getSheetByName('General');
-  var lastRow = generalSheet.getLastRow();
-  var presEmails = generalSheet.getRange('A4:A' + lastRow).getValues().flat();
-  presEmails = presEmails.filter(email => email.trim() !== '');
-  var advisoryBoardEmails = generalSheet.getRange('I4:I' + lastRow).getValues().flat();
-  advisoryBoardEmails = advisoryBoardEmails.filter(email => email.trim() !== '');
-  presEmails.forEach(function(email) {
-    ss.addEditor(email);
-  });
-  advisoryBoardEmails.forEach(function(email){
-    ss.addEditor(email);
-  });
-}
 
 function handleStatusChange(sheet, row, status) {
   var color;
