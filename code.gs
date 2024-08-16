@@ -276,10 +276,3 @@ function notifyPresidents() {
     MailApp.sendEmail(email, presSubject, presBody);
   });
 }
-function createDailyTrigger() {
-  ScriptApp.newTrigger('checkDeadlines')
-    .timeBased()
-    .everyDays(1) // Runs daily
-    .atHour(1) // Runs at 1 AM
-    .create();
-}
