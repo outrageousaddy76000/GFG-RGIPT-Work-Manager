@@ -249,18 +249,25 @@ function deleteRow() {
 }
 function checkDeadlines() {
   var boardSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Board');
-  var range = boardSheet.getRange('A2:H' + boardSheet.getLastRow());
+  var lastRow = boardSheet.getLastRow();
+  var range = boardSheet.getRange(2, 1, lastRow - 1, 8);
   var values = range.getValues();
   var today = new Date();
+  var shouldNotify = false;
 
   for (var i = 0; i < values.length; i++) {
-    var deadline = new Date(values[i][4]);
+    var deadlineStr = values[i][4];
     var status = values[i][6];
-    var row = i + 2;
+    var deadline = new Date(deadlineStr.split("/").reverse().join("/"));
+
     if (today > deadline && status !== 'Done') {
-      boardSheet.getRange('G' + row).setValue('Backlog');
-      notifyPresidents();
+      boardSheet.getRange(i + 2, 7).setValue('Backlog');
+      boardSheet.getRange(i + 2, 1, 1, 8).setBackground('#F4B6C2');
+      shouldNotify = true;
     }
+  }
+  if (shouldNotify) {
+    notifyPresidents();
   }
 }
 
