@@ -101,21 +101,23 @@ function updateBoard(ss,assignorPres,assignorTeams,record){
   var boardSheet = ss.getSheetByName('Board');
   var generalSheet = ss.getSheetByName('General');
   //step 1 - send mail
-  var assignedTeam = record[0][0];
+  var assignedTeams = record[0];
   var assignorTeam = assignorTeams[0];
   var headers = generalSheet.getRange('A3:H3').getValues().flat();
-  var teamIndex = headers.indexOf(assignedTeam)+1;
-  assignedTeamEmails = [];
-  if (teamIndex >= 1 && teamIndex <= 8) {
-    var columnLetter = String.fromCharCode(65 + teamIndex - 1);
-    assignedTeamEmails = generalSheet.getRange(columnLetter + '4:' + columnLetter + generalSheet.getLastRow()).getValues().flat();
-    assignedTeamEmails = assignedTeamEmails.filter(email => email.trim() !== '');
-  }
+  assignedTeams.forEach(function(assignedTeam) {
+    var teamIndex = headers.indexOf(assignedTeam) + 1;
+    var assignedTeamEmails = [];
+    if (teamIndex >= 1 && teamIndex <= 8) {
+      var columnLetter = String.fromCharCode(65 + teamIndex - 1);
+      assignedTeamEmails = generalSheet.getRange(columnLetter + '4:' + columnLetter + generalSheet.getLastRow()).getValues().flat();
+      assignedTeamEmails = assignedTeamEmails.filter(email => email.trim() !== '');
+    }
 
-  var teamSubject = 'New Work Assignment Request';
-  var teamBody = 'You have a new work assignment request for your team. Please discuss it and attend to it ASAP. Please check the board for details. Board Link: '+ ss.getUrl() + '\n\nRegards,\nGeeksforGeeks RGIPT Student Chapter';
-  assignedTeamEmails.forEach(function(email) {
-    MailApp.sendEmail(email, teamSubject, teamBody);
+    var teamSubject = 'New Work Assignment Request';
+    var teamBody = 'You have a new work assignment request for your team. Please discuss it and attend to it ASAP. Please check the board for details. Board Link: ' + ss.getUrl() + '\n\nRegards,\nGeeksforGeeks RGIPT Student Chapter';
+    assignedTeamEmails.forEach(function(email) {
+      MailApp.sendEmail(email, teamSubject, teamBody);
+    });
   });
   var isAdvisoryBoard = assignorPres.length === 0;
   var presSubject = 'Approval Required for Work Assignment Request';
@@ -144,7 +146,7 @@ function updateBoard(ss,assignorPres,assignorTeams,record){
     assignorTeam,
     description,
     approvedByAssignorHead,
-    assignedTeam,
+    assignedTeams.join(', '),
     deadline,
     priority,
     status,
