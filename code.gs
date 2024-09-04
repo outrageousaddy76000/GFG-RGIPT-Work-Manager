@@ -254,15 +254,13 @@ function checkDeadlines() {
   var lastRow = boardSheet.getLastRow();
   var range = boardSheet.getRange(2, 1, lastRow - 1, 8);
   var values = range.getValues();
-  var today = new Date();
   var shouldNotify = false;
+  var today = Utilities.formatDate(new Date(), 'GMT+05:30', 'dd/MM/yyyy');
 
   for (var i = 0; i < values.length; i++) {
-    var deadlineStr = values[i][4];
+    var deadline = values[i][4];
     var status = values[i][6];
-    var deadline = new Date(deadlineStr.split("/").reverse().join("/"));
-
-    if (today > deadline && status !== 'Done') {
+    if (compareDates(today, deadline)>0 && status !== 'Done') {
       boardSheet.getRange(i + 2, 7).setValue('Backlog');
       boardSheet.getRange(i + 2, 1, 1, 8).setBackground('#F4B6C2');
       shouldNotify = true;
@@ -284,4 +282,16 @@ function notifyPresidents() {
   presEmails.forEach(function(email) {
     MailApp.sendEmail(email, presSubject, presBody);
   });
+}
+function compareDates(date1, date2) {
+  if(typeof date2 !== 'string'){
+    date2 = Utilities.formatDate(date2, 'GMT+05:30', 'dd/MM/yyyy');
+  }
+  var parts1 = date1.split('/');
+  var parts2 = date2.split('/');
+  var d1 = new Date(parts1[2], parts1[1] - 1, parts1[0]);
+  var d2 = new Date(parts2[2], parts2[1] - 1, parts2[0]);
+  if (d1 > d2) return 1;
+  if (d1 < d2) return -1;
+  return 0;
 }
